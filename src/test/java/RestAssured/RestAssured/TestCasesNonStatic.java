@@ -28,6 +28,6 @@ public class TestCasesNonStatic {
 		 req.body(reqput);
 		 Response resp=req.post("/api/users");
 		 
-		 //Assert.assertEquals(resp.getStatusCode(),201);
+		 Assert.assertEquals(resp.getStatusCode(),201);
 	}
 }
