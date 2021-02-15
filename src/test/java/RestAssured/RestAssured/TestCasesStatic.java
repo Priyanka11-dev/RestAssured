@@ -1,21 +1,23 @@
 package RestAssured.RestAssured;
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-import org.json.simple.JSONObject;
-import org.junit.Assert;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-
-import io.restassured.response.Response;
-
-import static io.restassured.RestAssured.*;
-
+import java.io.File;
 import java.io.FileInputStream;
-
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONObject;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 public class TestCasesStatic {
 	public static String BaseURIVar;
@@ -118,5 +120,22 @@ public class TestCasesStatic {
 		Assert.assertEquals(respa.getStatusCode(), 200);
 		
 		System.out.println(respa.getBody().path("token"));
+	}
+	
+	@Test
+	public void jsonSchemaValidation() {
+			baseURI=BaseURIVar;
+			
+			
+			given().when().get("/api/users?page=2").then().assertThat().body(matchesJsonSchemaInClasspath("jschema.json"));
+	}
+	
+	@Test
+	public void inputReqUsingfile() throws IOException {
+		File file=new File("./InputReqFile/ReqFile.json");
+		FileInputStream filein=new FileInputStream(file);
+		String reqBody=IOUtils.toString(filein,"UTF-8");
+		
+		given().accept(ContentType.JSON).body(reqBody).when().post("/api/users").then().assertThat().statusCode(201);
 	}
 }
